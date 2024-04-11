@@ -1,6 +1,7 @@
 package dump;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Patient implements Comparable<Patient> {
@@ -68,20 +69,24 @@ public class Patient implements Comparable<Patient> {
 
     Patient(String str) {
         Random random = new Random();
-        String[] strArr = str.split(" ");
-        this.id = Integer.parseInt(strArr[0]);
-        this.fio = strArr[1].concat(" ").concat(strArr[2]).concat(" ").concat(strArr[3]);
-        String[] bd = strArr[4].split("-");
-        this.birthDate = LocalDate.of(Integer.parseInt(bd[0]), Integer.parseInt(bd[1]), Integer.parseInt(bd[2]));
-        this.sex = strArr[5].equals("1") ? "муж" : "жен";
-        this.num = Integer.parseInt(strArr[6]);
-        this.company = strArr[7];
-        this.snils = strArr[8];
-        this.policy = strArr[9];
-        this.finSource = strArr[10].equals("1") ? "ДМС" : strArr[10].equals("2") ? "ОМС" : "хозрасчет";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-M-d");
+        String[] strArr = str.split(",\\s*"); // Разделение по запятой и пробелам
+        this.id = Integer.parseInt(strArr[0].replace("(", "").trim());
+        this.fio = strArr[1].replace("'", "").trim();
+        this.birthDate = LocalDate.parse(strArr[2].replace("'", "").trim(), formatter);
+        this.sex = strArr[3].trim().equals("1") ? "муж" : "жен";
+        this.num = Integer.parseInt(strArr[4].trim());
+        this.company = strArr[5].replace("'", "").trim();
+        this.snils = strArr[6].replace("'", "").trim();
+        this.policy = strArr[7].replace("'", "").trim();
+        this.finSource = switch (strArr[8].trim()) {
+            case "1" -> "ДМС";
+            case "2" -> "ОМС";
+            default -> "хозрасчет";
+        };
         for (int i = 0; i < 10; i++) {
-            if (random.nextInt( 20) % 2 == 0) {
-                expenses.add(random.nextInt(0, 20) * 100);
+            if (random.nextInt(20) % 2 == 0) {
+                expenses.add(random.nextInt(20) * 100);
             }
         }
     }

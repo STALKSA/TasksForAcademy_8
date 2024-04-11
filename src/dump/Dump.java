@@ -10,8 +10,8 @@ import java.util.stream.Stream;
 public class Dump {
     static String file = "dump.txt";
     public static List<String> getDump() {
-        try(Stream<String> strings = Files.lines(Paths.get(file))) {
-            return strings.collect(Collectors.toList());
+        try (Stream<String> strings = Files.lines(Paths.get(file))) {
+            return strings.map(str -> str.replace("(", "").replace(")", "").trim()).collect(Collectors.toList());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
